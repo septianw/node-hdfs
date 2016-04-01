@@ -1,0 +1,23 @@
+{
+  "name": "hdfs",
+  "version": "0.0.1",
+  "description": "web HDFS REST API interface.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@cassandra01.solusi247.com:septian/hdfs.git"
+  },
+  "keywords": [
+    "hdfs",
+    "webhdfs",
+    "hadoop"
+  ],
+  "author": "Septian Wibisono",
+  "license": "MIT",
+  "dependencies": {
+    "apiclient": "^0.1.1"
+  }
+}
