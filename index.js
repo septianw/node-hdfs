@@ -20,7 +20,7 @@ function prepvar(param) {
   return {
     opt: opt,
     par: par
-  }
+  };
 }
 
 function Hdfs(data) {
@@ -87,6 +87,7 @@ Hdfs.prototype.upload = function (param, callback) {
   });
 };
 
+//belum ditest
 Hdfs.prototype.open = function (param, callback) {
   this.send('get', 'openreadfile', param, callback);
 };

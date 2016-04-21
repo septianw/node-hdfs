@@ -47,11 +47,12 @@ describe('Get', function() {
         'user.name': 'apps',
         path: remotepath
       }, function(e, r, b) {
+        var out;
         try {
-          var out = JSON.parse(b);
+          out = JSON.parse(b);
           console.log(out);
-        } catch (e) {
-          console.log(e);
+        } catch (err) {
+          console.log(err);
           done();
         }
         assert.equal('FILE', out.FileStatus.type);
@@ -66,16 +67,18 @@ describe('Get', function() {
   //       'user.name': 'apps',
   //       path: remotepath
   //     }, function(e, r, b) {
+  //       var out;
   //       try {
-  //         var out = JSON.parse(b);
+  //         out = JSON.parse(b);
   //         console.log(out);
-  //       } catch (e) {
-  //         console.log(e);
+  //       } catch (err) {
+  //         console.log(err);
   //         done();
   //       }
-  //       // assert.equal('FILE', out.FileStatus.type);
+  //       assert.equal('FILE', out.FileStatus.type);
   //       done();
   //     });
   //   });
   // });
+
 });
