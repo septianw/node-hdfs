@@ -24,9 +24,11 @@ function prepvar(param) {
 }
 
 function Hdfs(data) {
+  // console.log(data);
   seed.base.protocol = data.protocol;
   seed.base.hostname = data.hostname;
   seed.base.port = data.port;
+  // console.log(seed);
 
   var rest = new Api(seed);
   this.send = function (method, endpoint, param, callback) {
@@ -74,7 +76,9 @@ Hdfs.prototype.upload = function (param, callback) {
     if (e) {
       callback(e, r, b);
     } else {
+      console.log(r.statusCode);
       if (r.statusCode == 201) {
+        console.log('fail');
         self.send('postUpload', 'append', pb, callback);
       } else {
         callback(e, r, b);

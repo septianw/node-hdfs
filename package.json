@@ -18,6 +18,6 @@
   "author": "Septian Wibisono",
   "license": "MIT",
   "dependencies": {
-    "apiclient": "^0.1.3"
+    "apiclient": "^0.2.1"
   }
 }

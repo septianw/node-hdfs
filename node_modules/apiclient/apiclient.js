@@ -215,7 +215,7 @@ ApiClient.prototype._sendBodyBin = function (method, api, param, options, callba
       require('request-debug')(request);
     }
 
-    fs.createReadStream(localpath, {fd, fd}).pipe(request(opt, callback));
+    fs.createReadStream(localpath).pipe(request(opt, callback));
 
   }).on('error', function(e){
     console.error(e);

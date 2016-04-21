@@ -18,6 +18,8 @@ describe('Post', function() {
         localpath: localpath,
         path: remotepath
       }, function(e, r, b) {
+        console.log(e, r, b);
+        console.log(r.statusCode);
         assert.equal(200, r.statusCode);
         done();
       });
@@ -58,4 +60,22 @@ describe('Get', function() {
     });
   });
 
+  // describe('#Open', function() {
+  //   it('Open file from hdfs', function(done) {
+  //     ctest.open({
+  //       'user.name': 'apps',
+  //       path: remotepath
+  //     }, function(e, r, b) {
+  //       try {
+  //         var out = JSON.parse(b);
+  //         console.log(out);
+  //       } catch (e) {
+  //         console.log(e);
+  //         done();
+  //       }
+  //       // assert.equal('FILE', out.FileStatus.type);
+  //       done();
+  //     });
+  //   });
+  // });
 });
