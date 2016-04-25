@@ -117,7 +117,7 @@ Hdfs.prototype.gethomedirectory = function (param, callback) {
 };
 
 Hdfs.prototype.getcontentsummary = function (param, callback) {
-  var self = this; self._send('get', 'getcontentsum', param, callUploadback);
+  var self = this; self._send('get', 'getcontentsum', param, callback);
 };
 
 Hdfs.prototype.getfilechecksum = function (param, callback) {
