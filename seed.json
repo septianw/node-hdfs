@@ -77,8 +77,7 @@
       "setpermission": {
         "location": "%(path)s",
         "query": {
-          "op": "SETPERMISSION",
-          "permission": 755
+          "op": "SETPERMISSION"
         }
       },
       "setowner": {
