@@ -1,0 +1,32 @@
+build:
+  test:
+    image: 192.168.1.245:24799/bacirobase:$$NODE_VERSION-ubuntu-14.04
+    commands:
+      - npm set registry http://192.168.1.245:4873
+      - npm install
+      - npm test
+
+publish:
+  npm:
+    username: septianw
+    password: manager247
+    registry: http://192.168.1.245:4873
+    email: septian.wibisono@solusi247.com
+    always_auth: true
+
+matrix:
+  NODE_VERSION:
+    - 4.4.2
+
+notify:
+  hipchat:
+    auth_token: ZboMbxnbhQYBRlY3r5X3nvI9v2WADo4Gl2bA1Tkh
+    room_id_or_name: baciro
+    notify: true
+    template: >
+      <strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}
+
+branches:
+  - tmp
+  - master
+  - septian
