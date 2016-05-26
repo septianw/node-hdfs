@@ -1,3 +1,44 @@
+# NPM HDFS module
+
+[![Build Status](http://192.168.1.245/api/badges/septian/hdfs/status.svg)](http://192.168.1.245/septian/hdfs)
+
+This is node.js interface to communicating with web HDFS interface.
+
+## How to use
+
+### Installing
+Before we can use this module we need to install it first
+
+```bash
+$ npm set registry http://192.168.1.245:4873
+$ npm install --save hdfs
+```
+
+### Using
+```node.js
+var Hdfs = require('hdfs'),
+  localpath = '/tmp/filetest.txt',
+  remotepath = '/user/apps/filetest.txt';
+
+var hdfs = new Hdfs({
+  protocol: 'http',
+  hostname: '192.168.1.225',
+  port: 50070
+});
+
+hdfs.upload({
+  'user.name': 'apps',
+  overwrite: true,
+  localpath: localpath,
+  path: remotepath
+}, function(error, response, body) {
+  console.log(error);    // Error will be null if upload process is succeed.
+  console.log(response); // Raw response from node.js request.
+  console.log(body);     // Body of request result.
+});
+```
+
+
 ## Functions
 
 <dl>
@@ -424,4 +465,3 @@ Param properties :
 | --- | --- | --- |
 | param | <code>Object</code> | Request parameter for deleting file and or directory. |
 | callback | <code>function</code> | Callback function to return the result |
-
