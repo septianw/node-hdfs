@@ -4,6 +4,10 @@
  * purpose  api client
  */
 
+/**
+ * ApiClient constructor
+ * @param {Object} data Seed data.
+ */
 function ApiClient(data) {
   var util = require('util'),
       querystring = require('querystring'),
@@ -27,6 +31,11 @@ function ApiClient(data) {
   this.data = out;
 }
 
+/**
+ * Check if is object empty
+ * @param  {Object}  obj Object to be Check
+ * @return {Boolean}     Return true if empty or false otherwise.
+ */
 function isEmptyObject(obj) {
   for (var key in obj) {
     if (Object.prototype.hasOwnProperty.call(obj, key)) {
@@ -36,7 +45,8 @@ function isEmptyObject(obj) {
   return true;
 }
 
-ApiClient.prototype._defaultAct = function (method, api, param, options, callback) {
+ApiClient.prototype._defaultAct = _defaultAct;
+function _defaultAct (method, api, param, options, callback) {
   var querystring = require('querystring'),
       merge = require('merge'),
       opplain = {};
@@ -52,9 +62,10 @@ ApiClient.prototype._defaultAct = function (method, api, param, options, callbac
   opplain = merge(dops, options);
 
   this._minta(method, api, param, opplain, callback);
-};
+}
 
-ApiClient.prototype._mktempdir = function (file, cb) {
+ApiClient.prototype._mktempdir = _mktempdir;
+function _mktempdir (file, cb) {
   var tmp = require('tmp');
   if (file) {
     tmp.file({keep: true, template: '/tmp/tmp-XXXXXX'}, function __tmpFileCreated (err, path) {
@@ -65,18 +76,7 @@ ApiClient.prototype._mktempdir = function (file, cb) {
       cb(err, path, '');
     });
   }
-  // var cmd = 'mktemp --tmpdir=' + config.tmp.dir;
-  // var exec = require('child_process').exec;
-  // if (file) {
-  //   exec(cmd + ' bgtmpXXXXXXXXXX', function excb(err, stdout, stderr) {
-  //     cb(err, stdout, stderr);
-  //   });
-  // } else {
-  //   exec(cmd + ' -d bgtmpXXXXXXXXXX', function excb(err, stdout, stderr) {
-  //     cb(err, stdout, stderr);
-  //   });
-  // }
-};
+}
 
 ApiClient.prototype._minta = function (method, api, param, options, callback) {
   var request = require('request'),
@@ -85,9 +85,10 @@ ApiClient.prototype._minta = function (method, api, param, options, callback) {
       cek = require('net').createConnection,
       url = require('url'),
       opt = {},
+      self = this,
       defaultopt = {
         method: method,
-        uri: this.data[method][api]
+        uri: self.data[method][api]
       };
 
   if (isEmptyObject(options)) {
@@ -126,10 +127,11 @@ ApiClient.prototype._dumpdisk = function (method, api, param, options, callback)
       cek = require('net').createConnection,
       fs = require('fs.extra'),
       url = require('url'),
+      self = this,
       opt = {},
       defaultopt = {
         method: method,
-        uri: this.data[method][api]
+        uri: self.data[method][api]
       };
 
   if (isEmptyObject(options)) {
@@ -140,7 +142,6 @@ ApiClient.prototype._dumpdisk = function (method, api, param, options, callback)
 
   opt.uri = sprintf(opt.uri, param);
 
-  var self = this;
   cek(url.parse(opt.uri).port, url.parse(opt.uri).hostname).on('connect', function(e){
 
     self._mktempdir('file', function mktmpfile (e, o, se){
@@ -182,10 +183,11 @@ ApiClient.prototype._sendBodyBin = function (method, api, param, options, callba
       url = require('url'),
       fs = require('fs'),
       opt = {},
+      self = this,
       localpath = options.qs.localpath,
       defaultopt = {
         method: method,
-        uri: this.data[method][api],
+        uri: self.data[method][api],
         headers: {
           'Content-Type':mime.lookup(localpath)
         }
@@ -235,34 +237,108 @@ ApiClient.prototype._sendBodyBin = function (method, api, param, options, callba
   });
 };
 
+/**
+ * Download file from server
+ *
+ * @param  {String}   api      Endpoint API.
+ * @param  {Object}   param    Parameter url object.
+ * @param  {Object}   options  Request option object.
+ * @param  {Function} callback Callback function.
+ * @return {Void}              Nothing to return.
+ */
 ApiClient.prototype.download = function (api, param, options, callback) {
   this._dumpdisk('GET', api, param, options, callback);
 };
 
+/**
+ * Get thing from server using method HTTP GET
+ *
+ * @param  {String}   api      Endpoint API.
+ * @param  {Object}   param    Parameter url object.
+ * @param  {Object}   options  Request option object.
+ * @param  {Function} callback Callback function.
+ * @return {Void}              Nothing to return.
+ */
 ApiClient.prototype.get = function (api, param, options, callback) {
   this._minta('GET', api, param, options, callback);
 };
 
+/**
+ * Upload file to server using POST method with attached file on body.
+ *
+ * @param  {String}   api      Endpoint API.
+ * @param  {Object}   param    Parameter url object.
+ * @param  {Object}   options  Request option object.
+ * @param  {Function} callback Callback function.
+ * @return {Void}              Nothing to return.
+ */
 ApiClient.prototype.postUpload = function (api, param, options, callback) {
   this._sendBodyBin('POST', api, param, options, callback);
 };
 
+/**
+ * Upload file to server using POST method with attached file on body,
+ * formatted as multipart form.
+ *
+ * @param  {String}   api      Endpoint API.
+ * @param  {Object}   param    Parameter url object.
+ * @param  {Object}   options  Request option object.
+ * @param  {Function} callback Callback function.
+ * @return {Void}              Nothing to return.
+ */
 ApiClient.prototype.postForm = function (api, param, options, callback) {
   this._defaultAct('POST', api, param, options, callback);
 };
 
+/**
+ * Send string via POST method. This API will keep body on memory, attaching
+ * big string more than 1MB is not recommended, as it will fill the memory so fast.
+ *
+ * @param  {String}   api      Endpoint API.
+ * @param  {Object}   param    Parameter url object.
+ * @param  {Object}   options  Request option object.
+ * @param  {Function} callback Callback function.
+ * @return {Void}              Nothing to return.
+ */
 ApiClient.prototype.post = function (api, param, options, callback) {
   this._minta('POST', api, param, options, callback);
 };
 
+/**
+ * Send data using PUT method with multipart/form-data format body.
+ *
+ * @param  {String}   api      Endpoint API.
+ * @param  {Object}   param    Parameter url object.
+ * @param  {Object}   options  Request option object.
+ * @param  {Function} callback Callback function.
+ * @return {Void}              Nothing to return.
+ */
 ApiClient.prototype.putForm = function (api, param, options, callback) {
   this._defaultAct('PUT', api, param, options, callback);
 };
 
+/**
+ * Send data using PUT method with raw string body.
+ *
+ * @param  {String}   api      Endpoint API.
+ * @param  {Object}   param    Parameter url object.
+ * @param  {Object}   options  Request option object.
+ * @param  {Function} callback Callback function.
+ * @return {Void}              Nothing to return.
+ */
 ApiClient.prototype.put = function (api, param, options, callback) {
   this._minta('PUT', api, param, options, callback);
 };
 
+/**
+ * Send data using DELETE method with raw string body.
+ *
+ * @param  {String}   api      Endpoint API.
+ * @param  {Object}   param    Parameter url object.
+ * @param  {Object}   options  Request option object.
+ * @param  {Function} callback Callback function.
+ * @return {Void}              Nothing to return.
+ */
 ApiClient.prototype.delete = function (api, param, options, callback) {
   this._minta('DELETE', api, param, options, callback);
 };

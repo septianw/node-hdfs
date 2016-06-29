@@ -1,6 +1,6 @@
 {
   "name": "hdfs247",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "web HDFS REST API interface.",
   "main": "index.js",
   "scripts": {
@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git@cassandra01.solusi247.com:septian/hdfs.git"
+    "url": "git@github.com:septianw/node-hdfs.git"
   },
   "keywords": [
     "hdfs",
@@ -18,10 +18,9 @@
   "author": "Septian Wibisono",
   "license": "MIT",
   "dependencies": {
-    "apiclient": "^0.2.1"
+    "apiclient": "^0.2.5"
   },
   "devDependencies": {
-    "bcommon": "0.0.5",
     "debug": "^2.2.0"
   }
 }

@@ -1,0 +1,27 @@
+{
+  "base": {
+    "pathname": "v2/"
+  },
+  "path": {
+    "GET": {
+      "root": {
+        "location": "5719db70120000b80a1b71ed"
+      }
+    },
+    "POST": {
+      "root": {
+        "location": "5719db70120000b80a1b71ed"
+      }
+    },
+    "PUT": {
+      "root": {
+        "location": "5719db70120000b80a1b71ed"
+      }
+    },
+    "DELETE": {
+      "root": {
+        "location": "5719db70120000b80a1b71ed"
+      }
+    }
+  }
+}

@@ -1,8 +1,5 @@
 var Api = require('apiclient');
-var async = require('async');
 var seed = require('./seed.json');
-var common = require('bcommon');
-var exec = require('child_process').exec;
 
 /**
  * Check the parameter, return path if there is path in parameter,
@@ -426,7 +423,7 @@ Hdfs.prototype.settimes = function (param, callback) {
  * @see https://hadoop.apache.org/docs/r2.7.0/hadoop-project-dist/hadoop-hdfs/WebHDFS.html#Delete_a_FileDirectory
  *
  * Param properties :
- * 
+ *
  * |    name     | presence  |  type   | default | valid value | description |
  * | ----------- | --------- | ------- | ------- | --- | ----------- |
  * | path        | Mandatory | String  | /       | An absolute FileSystem path without scheme and authority. | Path status that will be taken |
