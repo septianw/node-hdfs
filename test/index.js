@@ -5,7 +5,7 @@ var localpath = path.resolve(__dirname, 'test.txt');
 var localpath2 = path.resolve(__dirname, 'test2.txt');
 var remotepath = '/user/apps/filetest.txt';
 var remotepath2 = '/user/apps/dirtest';
-var common = require('bcommon');
+// var common = require('bcommon');
 var ctest = new Hdfs({
   protocol: 'http',
   hostname: '192.168.1.225',
@@ -230,7 +230,7 @@ describe('#Get Content Summary', function() {
         'user.name': 'apps',
         path: remotepath
       }, function(e, r, b) {
-        common.showLog('debug', b);
+        // common.showLog('debug', b);
         var out;
         try {
           out = JSON.parse(b);
@@ -251,7 +251,7 @@ describe('#Get File Checksum', function() {
         'user.name': 'apps',
         path: remotepath
       }, function(e, r, b) {
-        common.showLog('debug', b);
+        // common.showLog('debug', b);
         var out;
         try {
           out = JSON.parse(b);

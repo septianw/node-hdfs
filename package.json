@@ -1,6 +1,6 @@
 {
   "name": "hdfs247",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "web HDFS REST API interface.",
   "main": "index.js",
   "scripts": {
@@ -18,7 +18,8 @@
   "author": "Septian Wibisono",
   "license": "MIT",
   "dependencies": {
-    "apiclient": "^0.2.5"
+    "apiclient": "^0.2.5",
+    "request": "^2.74.0"
   },
   "devDependencies": {
     "debug": "^2.2.0"
