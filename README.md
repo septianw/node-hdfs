@@ -10,8 +10,7 @@ This is node.js interface to communicating with web HDFS interface.
 Before we can use this module we need to install it first
 
 ```bash
-$ npm set registry http://192.168.1.245:4873
-$ npm install --save hdfs
+$ npm install --save hdfs247
 ```
 
 ### Using
