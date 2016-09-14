@@ -6,12 +6,12 @@ build:
       - npm install
       - npm test
 
-publish:
-  npm:
-    username: septianw
-    password: $$NPMPASS
-    email: asep.gelo@gmail.com
-    always_auth: true
+# publish:
+#   npm:
+#     username: septianw
+#     password: $$NPMPASS
+#     email: asep.gelo@gmail.com
+#     always_auth: true
 
 matrix:
   NODE_VERSION:
