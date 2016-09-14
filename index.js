@@ -48,6 +48,7 @@ function Hdfs(data) {
   // console.log(seed);
   var rest = new Api(seed);
   var self = this; self._send = function (method, endpoint, param, callback) {
+    debugger;
     var p = prepvar(param);
     // p.opt.followAllRedirects = true;
     rest[method](endpoint, p.par, p.opt, callback);
@@ -152,6 +153,7 @@ Hdfs.prototype.upload = function (param, callback) {
   delete param.localpath;
   param.followAllRedirects = true;
   self._send('put', 'create', param, function(e, r, b) {
+    debugger;
     if (e) {
       callback(e, r, b);
     } else {
@@ -196,8 +198,8 @@ Hdfs.prototype.open = function (param, callback) {
  * @param  {Object}   param    Request parameter for getting home directory.
  * @param  {Function} callback Callback function to return the result
  */
-Hdfs.prototype.gethomedirectory = function (callback) {
-  var param = {};
+Hdfs.prototype.gethomedirectory = function (param, callback) {
+  // var param = {};
   var self = this; self._send('get', 'gethomedir', param, callback);
 };
 

@@ -9,14 +9,15 @@ build:
 publish:
   npm:
     username: septianw
-    password: manager247
-    registry: http://192.168.1.245:4873
-    email: septian.wibisono@solusi247.com
+    password: $$NPMPASS
+    email: asep.gelo@gmail.com
     always_auth: true
 
 matrix:
   NODE_VERSION:
     - 4.4.2
+    - 4.5.0
+    - 6.5.0
 
 notify:
   hipchat:
