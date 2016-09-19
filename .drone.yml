@@ -2,6 +2,7 @@ build:
   test:
     image: mhart/alpine-node
     commands:
+      - echo "192.168.1.159  yava yava.solusi247.com" >> /etc/hosts
       - npm install -g mocha
       - npm install
       - mocha -t 5000
