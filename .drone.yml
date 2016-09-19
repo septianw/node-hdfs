@@ -2,8 +2,9 @@ build:
   test:
     image: mhart/alpine-node
     commands:
+      - npm install -g mocha
       - npm install
-      - npm test
+      - mocha -t 5000
 
 matrix:
   NODE_VERSION:
