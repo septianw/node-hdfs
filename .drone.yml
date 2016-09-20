@@ -2,22 +2,16 @@ build:
   test:
     image: mhart/alpine-node
     commands:
+      - echo "192.168.1.159  yava yava.solusi247.com" >> /etc/hosts
+      - npm install -g mocha
       - npm install
-      - npm test
+      - mocha -t 5000
 
 matrix:
   NODE_VERSION:
     - 4.4.2
     - 4.5.0
     - 6.5.0
-
-notify:
-  hipchat:
-    auth_token: ZboMbxnbhQYBRlY3r5X3nvI9v2WADo4Gl2bA1Tkh
-    room_id_or_name: baciro
-    notify: true
-    template: >
-      <strong>{{ uppercasefirst build.status }}</strong> <a href=\"{{ system.link_url }}/{{ repo.owner }}/{{ repo.name }}/{{ build.number }}\">{{ repo.owner }}/{{ repo.name }}#{{ truncate build.commit 8 }}</a> ({{ build.branch }}) by {{ build.author }} in {{ duration build.started_at build.finished_at }} </br> - {{ build.message }}
 
 branches:
   - tmp

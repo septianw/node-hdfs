@@ -24,6 +24,8 @@ describe('PUT', function() {
       };
       console.log(parameter);
       ctest.upload(parameter, function(e, r, b) {
+        console.log(e);
+        console.log(r);
         console.log(b);
         assert.equal(200, r.statusCode);
         if (r.statusCode === 200) {     // remove after upload
