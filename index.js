@@ -25,6 +25,7 @@ function prepvar(param) {
   var par = cekpath(param);
   delete param.path;
   var opt = {
+    headers: { 'Content-Type': 'application/octet-stream' },
     qs: param
   };
   if (param.followAllRedirects) {
@@ -54,7 +55,7 @@ function Hdfs(data) {
     rest[method](endpoint, p.par, p.opt, callback);
   };
   self._sendFile = function (method, url, filepath, callback) {
-    var request = require('request'),
+    var request = require('request').defaults({ headers: { 'Content-Type': 'application/octet-stream' } }),
       fs = require('fs'),
       rf = fs.createReadStream(filepath),
       r = request[method](url);

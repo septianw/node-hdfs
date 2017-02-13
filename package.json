@@ -1,6 +1,6 @@
 {
   "name": "hdfs247",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "description": "web HDFS REST API interface.",
   "main": "index.js",
   "scripts": {
