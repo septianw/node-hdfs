@@ -1,6 +1,7 @@
 var Api = require('apiclient');
 var seed = require('./seed.json');
 
+
 /**
  * Check the parameter, return path if there is path in parameter,
  * and return / if no path in parameter.
@@ -8,33 +9,46 @@ var seed = require('./seed.json');
  * @return {Object}       Object with only path in it.
  */
 function cekpath(param) {
-  if (param.path) {
-    return { path: param.path };
-  } else {
-    return { path: '/' };
-  }
+    if (param.path) {
+        return { path: param.path };
+    } else {
+        return { path: '/' };
+    }
 }
 
 /**
- * Prepare parameter, separate request option and request parameter,
+ * Prepare parameter, separate request option and request parameter,param
  * set default option, and explicitly set path.
  * @param  {Object} param Mixed request parameter.
  * @return {Object}       Clean ready to use request parameter.
  */
 function prepvar(param) {
-  var par = cekpath(param);
-  delete param.path;
-  var opt = {
-    headers: { 'Content-Type': 'application/octet-stream' },
-    qs: param
-  };
-  if (param.followAllRedirects) {
-    opt.followAllRedirects = true;
-  }
-  return {
-    opt: opt,
-    par: par
-  };
+
+    par = cekpath(param);
+    delete param.path;
+
+    if(param.spnego_token != undefined){
+        opt = {
+            headers: { 'Content-Type': 'application/octet-stream' , 'Authorization': 'Negotiate '+param.spnego_token},
+            qs: param
+        };
+    }else{
+        opt = {
+            headers: { 'Content-Type': 'application/octet-stream' },
+            qs: param
+        };
+    }
+
+
+    if (param.followAllRedirects) {
+        opt.followAllRedirects = true;
+    }
+
+    return {
+        opt: opt,
+        par: par
+    };
+
 }
 
 /**
@@ -42,41 +56,45 @@ function prepvar(param) {
  * @param {Object} data Object data seed.
  */
 function Hdfs(data) {
-  // console.log(data);
-  seed.base.protocol = data.protocol;
-  seed.base.hostname = data.hostname;
-  seed.base.port = data.port;
-  // console.log(seed);
-  var rest = new Api(seed);
-  var self = this; self._send = function (method, endpoint, param, callback) {
-    debugger;
-    var p = prepvar(param);
-    // p.opt.followAllRedirects = true;
-    rest[method](endpoint, p.par, p.opt, callback);
-  };
-  self._sendFile = function (method, url, filepath, callback) {
-    var request = require('request').defaults({ headers: { 'Content-Type': 'application/octet-stream' } }),
-      fs = require('fs'),
-      rf = fs.createReadStream(filepath),
-      r = request[method](url);
-    rf.pipe(r);
-    rf.on('error', callback);
-    rf.on('end', function () {
-      r.on('response', function (res) {
-        var data = '', ck = 0;
-        res.on('data', function (chunk) {
-          data += chunk;
-          ck += chunk.length;
+    console.log(data);
+    seed.base.protocol = data.protocol;
+    seed.base.hostname = data.hostname;
+    seed.base.port = data.port;
+    // console.log(seed);
+    var rest = new Api(seed);
+    var self = this; self._send = function (method, endpoint, param, callback) {
+        debugger;
+        var p = prepvar(param);
+        //console.log(p);
+        // p.opt.followAllRedirects = true;
+        rest[method](endpoint, p.par, p.opt, callback);
+    };
+    self._sendFile = function (method, url, filepath, callback) {
+        //console.log(method);
+
+        var request = require('request').defaults({ headers: { 'Content-Type': 'application/octet-stream' } }),
+            fs = require('fs'),
+            rf = fs.createReadStream(filepath),
+            r = request[method](url);
+        rf.pipe(r);
+        rf.on('error', callback);
+        rf.on('end', function () {
+            r.on('response', function (res) {
+                var data = '', ck = 0;
+                res.on('data', function (chunk) {
+                    data += chunk;
+                    ck += chunk.length;
+                });
+                res.on('end', function () {
+                    callback(null, res, data);
+                });
+                res.on('error', function (err) {
+                    callback(err, res);
+                });
+            });
         });
-        res.on('end', function () {
-          callback(null, res, data);
-        });
-        res.on('error', function (err) {
-          callback(err, res);
-        });
-      });
-    });
-  };
+
+    };
 }
 
 /**
@@ -91,7 +109,7 @@ function Hdfs(data) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.getfilestatus = function (param, callback) {
-  var self = this; self._send('get', 'filestatus', param, callback);
+    var self = this; self._send('get', 'filestatus', param, callback);
 };
 
 /**
@@ -105,7 +123,7 @@ Hdfs.prototype.getfilestatus = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.liststatus = function (param, callback) {
-  var self = this; self._send('get', 'liststatus', param, callback);
+    var self = this; self._send('get', 'liststatus', param, callback);
 };
 
 /**
@@ -125,7 +143,7 @@ Hdfs.prototype.liststatus = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.download = function (param, callback) {
-  var self = this; self._send('download', 'openreadfile', param, callback);
+    var self = this; self._send('download', 'openreadfile', param, callback);
 };
 
 /**
@@ -148,27 +166,27 @@ Hdfs.prototype.download = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.upload = function (param, callback) {
-  var self = this,
-    pb = JSON.parse(JSON.stringify(param)),
-    request = require('request');
-  delete param.localpath;
-  param.followAllRedirects = true;
-  self._send('put', 'create', param, function(e, r, b) {
-    debugger;
-    if (e) {
-      callback(e, r, b);
-    } else {
-      if (r.statusCode == 201) {
-        self._send('post', 'append', pb, function (ee, rr, bb) {
-          if (rr.statusCode == 307) {
-            self._sendFile('post', rr.headers.location, pb.localpath, callback);
-          }
-        });
-      } else {
-        callback(e, r, b);
-      }
-    }
-  });
+    var self = this,
+        pb = JSON.parse(JSON.stringify(param)),
+        request = require('request');
+    delete param.localpath;
+    param.followAllRedirects = true;
+    self._send('put', 'create', param, function(e, r, b) {
+        debugger;
+        if (e) {
+            callback(e, r, b);
+        } else {
+            if (r.statusCode == 201) {
+                self._send('post', 'append', pb, function (ee, rr, bb) {
+                    if (rr.statusCode == 307) {
+                        self._sendFile('post', rr.headers.location, pb.localpath, callback);
+                    }
+                });
+            } else {
+                callback(e, r, b);
+            }
+        }
+    });
 };
 
 /**
@@ -189,7 +207,7 @@ Hdfs.prototype.upload = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.open = function (param, callback) {
-  var self = this; self._send('get', 'openreadfile', param, callback);
+    var self = this; self._send('get', 'openreadfile', param, callback);
 };
 
 /**
@@ -200,8 +218,8 @@ Hdfs.prototype.open = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.gethomedirectory = function (param, callback) {
-  // var param = {};
-  var self = this; self._send('get', 'gethomedir', param, callback);
+    // var param = {};
+    var self = this; self._send('get', 'gethomedir', param, callback);
 };
 
 /**
@@ -217,7 +235,7 @@ Hdfs.prototype.gethomedirectory = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.getcontentsummary = function (param, callback) {
-  var self = this; self._send('get', 'getcontentsum', param, callback);
+    var self = this; self._send('get', 'getcontentsum', param, callback);
 };
 
 /**
@@ -233,7 +251,7 @@ Hdfs.prototype.getcontentsummary = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.getfilechecksum = function (param, callback) {
-  var self = this; self._send('get', 'getfilechecksum', param, callback);
+    var self = this; self._send('get', 'getfilechecksum', param, callback);
 };
 //skipped
 
@@ -251,7 +269,7 @@ Hdfs.prototype.getfilechecksum = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.concat = function (param, callback) {
-  var self = this; self._send('post', 'concat', param, callback);
+    var self = this; self._send('post', 'concat', param, callback);
 };
 
 /**
@@ -269,20 +287,20 @@ Hdfs.prototype.concat = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.append = function (param, callback) {
-  var pb = JSON.parse(JSON.stringify(param));
-  delete param.localpath;
-  var self = this; self._send('post', 'append', param, function(e, r, b) {
-    if (e) {
-      callback(e, r, b);
-    } else {
-      console.log(r.statusCode);
-      if (r.statusCode == 307) {
-        self._sendFile('post', r.headers.location, pb.localpath, callback);
-      } else {
-        callback(e, r, b);
-      }
-    }
-  });
+    var pb = JSON.parse(JSON.stringify(param));
+    delete param.localpath;
+    var self = this; self._send('post', 'append', param, function(e, r, b) {
+        if (e) {
+            callback(e, r, b);
+        } else {
+            console.log(r.statusCode);
+            if (r.statusCode == 307) {
+                self._sendFile('post', r.headers.location, pb.localpath, callback);
+            } else {
+                callback(e, r, b);
+            }
+        }
+    });
 };
 
 /**
@@ -305,9 +323,9 @@ Hdfs.prototype.append = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.create = function (param, callback) {
-  var self = this;
-  param.followAllRedirects = true;
-  self._send('put', 'create', param, callback);
+    var self = this;
+    param.followAllRedirects = true;
+    self._send('put', 'create', param, callback);
 };
 
 /**
@@ -326,7 +344,7 @@ Hdfs.prototype.create = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.rename = function (param, callback) {
-  var self = this; self._send('put', 'rename', param, callback);
+    var self = this; self._send('put', 'rename', param, callback);
 };
 
 /**
@@ -344,7 +362,7 @@ Hdfs.prototype.rename = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.mkdirs = function (param, callback) {
-  var self = this; self._send('put', 'makedir', param, callback);
+    var self = this; self._send('put', 'makedir', param, callback);
 };
 
 /**
@@ -362,7 +380,7 @@ Hdfs.prototype.mkdirs = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.setpermission = function (param, callback) {
-  var self = this; self._send('put', 'setpermission', param, callback);
+    var self = this; self._send('put', 'setpermission', param, callback);
 };
 
 /**
@@ -381,7 +399,7 @@ Hdfs.prototype.setpermission = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.setowner = function (param, callback) {
-  var self = this; self._send('put', 'setowner', param, callback);
+    var self = this; self._send('put', 'setowner', param, callback);
 };
 
 /**
@@ -399,7 +417,7 @@ Hdfs.prototype.setowner = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.setreplication = function (param, callback) {
-  var self = this; self._send('put', 'setreplication', param, callback);
+    var self = this; self._send('put', 'setreplication', param, callback);
 };
 
 /**
@@ -418,7 +436,7 @@ Hdfs.prototype.setreplication = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.settimes = function (param, callback) {
-  var self = this; self._send('put', 'settimes', param, callback);
+    var self = this; self._send('put', 'settimes', param, callback);
 };
 
 /**
@@ -436,7 +454,7 @@ Hdfs.prototype.settimes = function (param, callback) {
  * @param  {Function} callback Callback function to return the result
  */
 Hdfs.prototype.delete = function (param, callback) {
-  var self = this; self._send('delete', 'delete', param, callback);
+    var self = this; self._send('delete', 'delete', param, callback);
 };
 
 module.exports = Hdfs;
