@@ -1,5 +1,6 @@
 var Api = require('apiclient');
 var seed = require('./seed.json');
+var krb5 = require('krb5');
 
 
 /**
@@ -176,12 +177,45 @@ Hdfs.prototype.upload = function (param, callback) {
         if (e) {
             callback(e, r, b);
         } else {
+            console.log(r);
             if (r.statusCode == 201) {
-                self._send('post', 'append', pb, function (ee, rr, bb) {
-                    if (rr.statusCode == 307) {
-                        self._sendFile('post', rr.headers.location, pb.localpath, callback);
+               if(pb.spnego_token != undefined){
+                   krb5.kinit({
+                    principal: pb.principal,
+                    keytab: pb.keytab,
+                    realm: pb.realm,
+                }, function (err, ccname) {
+                    if (err) {
+                        callback(err);
+                    } else {
+                        console.log('Credentials saved in', ccname)
+                        // Get the SPNEGO token
+                        krb5.spnego({
+                            service_fqdn: pb.krb_fqdn
+                        }, function (err, token) {
+                            if (err) {
+                                console.log(err);
+                            } else {
+
+                                pb.spnego_token = token;
+                                self._send('post', 'append', pb, function (ee, rr, bb) {
+                                    if (rr.statusCode == 307) {
+                                        self._sendFile('post', rr.headers.location, pb.localpath, callback);
+                                    }
+                                });
+
+                            }
+                        })
                     }
                 });
+               }else{
+                   self._send('post', 'append', pb, function (ee, rr, bb) {
+                      //console.log(rr);
+                      if (rr.statusCode == 307) {
+                          self._sendFile('post', rr.headers.location, pb.localpath, callback);
+                      }
+                  });
+               }
             } else {
                 callback(e, r, b);
             }
@@ -458,3 +492,4 @@ Hdfs.prototype.delete = function (param, callback) {
 };
 
 module.exports = Hdfs;
+
