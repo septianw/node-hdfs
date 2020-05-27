@@ -13,7 +13,7 @@ Before we can use this module we need to install it first
 $ npm install --save hdfs247
 ```
 
-### Using
+### Using on Unsecure Cluster
 ```node.js
 var Hdfs = require('hdfs'),
   localpath = '/tmp/filetest.txt',
@@ -29,6 +29,35 @@ hdfs.upload({
   'user.name': 'apps',
   overwrite: true,
   localpath: localpath,
+  path: remotepath
+}, function(error, response, body) {
+  console.log(error);    // Error will be null if upload process is succeed.
+  console.log(response); // Raw response from node.js request.
+  console.log(body);     // Body of request result.
+});
+```
+
+### Using on Secure Cluster (Kerberized/SPNego)
+```node.js
+var Hdfs = require('hdfs'),
+  localpath = '/tmp/filetest.txt',
+  remotepath = '/user/apps/filetest.txt';
+
+var hdfs = new Hdfs({
+  protocol: 'http',
+  hostname: '192.168.1.225',
+  port: 50070
+});
+
+hdfs.upload({
+  'user.name': 'apps',
+  overwrite: true,
+  localpath: localpath,
+  spnego_token: result.token,
+  principal: spnego_principal,
+  keytab: keytab,
+  realm: realm,
+  krb_fqdn: krb_fqdn,
   path: remotepath
 }, function(error, response, body) {
   console.log(error);    // Error will be null if upload process is succeed.
@@ -464,3 +493,4 @@ Param properties :
 | --- | --- | --- |
 | param | <code>Object</code> | Request parameter for deleting file and or directory. |
 | callback | <code>function</code> | Callback function to return the result |
+
