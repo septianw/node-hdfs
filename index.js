@@ -177,7 +177,7 @@ Hdfs.prototype.upload = function (param, callback) {
         if (e) {
             callback(e, r, b);
         } else {
-            console.log(r);
+            // console.log(r);
             if (r.statusCode == 201) {
                if(pb.spnego_token != undefined){
                    krb5.kinit({
